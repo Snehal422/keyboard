@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onscreen Keyboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+        .key {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            user-select: none;
+        }
+        .preview {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            max-width: 500px;
+            min-height: 50px;
+            margin-bottom: 20px;
+        }
+        .quote {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="preview"></div>
+<div class="keyboard">
+    <!-- Generate keys dynamically via JavaScript -->
+</div>
+<div class="quote"></div>
+
+<script>
+    const keys = [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 
+        'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 
+        'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', 
+        '5', '6', '7', '8', '9', '0', 'space'
+    ];
+
+    const keyboard = document.querySelector('.keyboard');
+    const preview = document.querySelector('.preview');
+
+    keys.forEach(key => {
+        const keyElement = document.createElement('div');
+        keyElement.classList.add('key');
+        keyElement.id = `key-${key === ' ' ? 'space' : key}`;
+        keyElement.textContent = key === 'space' ? ' ' : key;
+        keyElement.addEventListener('click', () => handleKeyClick(key));
+        keyboard.appendChild(keyElement);
+    });
+
+    function handleKeyClick(key) {
+        if (key === 'space') {
+            preview.textContent += ' ';
+        } else {
+            preview.textContent += key;
+        }
+        checkForSpecialText();
+    }
+
+    function checkForSpecialText() {
+        if (preview.textContent.trim() === 'forty two') {
+            fetchQuote();
+        } else {
+            const quoteDiv = document.querySelector('.quote');
+            if (quoteDiv) {
+                quoteDiv.remove();
+            }
+        }
+    }
+
+    function fetchQuote() {
+        fetch('https://api.quotable.io/random')
+            .then(response => response.json())
+            .then(data => {
+                let quoteDiv = document.querySelector('.quote');
+                if (!quoteDiv) {
+                    quoteDiv = document.createElement('div');
+                    quoteDiv.classList.add('quote');
+                    document.body.appendChild(quoteDiv);
+                }
+                quoteDiv.textContent = `"${data.content}" - ${data.author}`;
+            });
+    }
+</script>
+
+</body>
+</html>
